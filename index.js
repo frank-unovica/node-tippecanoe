@@ -3,7 +3,7 @@ const shell = require('shelljs'),
 const colors = require('colors');
 
 function shellExec(args, echo) {
-    const cmd = `${args.cmd} ${args.join(' ')}`;
+    const cmd = args.join(' ');
     if (echo) {
         console.log(cmd.green);
     }
@@ -11,17 +11,17 @@ function shellExec(args, echo) {
     return cmd;
 }
 
-function execAsync(args, echo) {
+function execAsync(cmd, args, echo) {
     const spawn = require('child-process-promise').spawn;
     if (echo) {
-        console.log(`${args.cmd} ${args.join(' ')}`.green);
+        console.log(`${cmd} ${args.join(' ')}`.green);
     }
-    const promise = spawn(args.cmd, args);
+    const promise = spawn(cmd, args);
     promise.childProcess.stderr.pipe(process.stdout);
     return promise;
 }
 
-function tippecanoe(inputFiles=[], params, options = {}) {
+function tippecanoe(inputFiles=[], cmd, params, options = {}) {
     function quotify(s) {
         if (typeof s === 'object') {
             s = JSON.stringify(s);
@@ -50,16 +50,16 @@ function tippecanoe(inputFiles=[], params, options = {}) {
     inputFiles = !Array.isArray(inputFiles) ? [inputFiles] : inputFiles;
 
     // const cmd = `tippecanoe ${paramsStr} ${layerFiles.map(quotify).join(' ')}`;
-    const args = [...paramStrs, ...inputFiles.map(quotify)];
+    const args = [cmd, ...paramStrs, ...inputFiles.map(quotify)];
     if (options.async) {
-        return execAsync(args, options.echo);
+        return execAsync(cmd, args, options.echo);
     } else {
         return shellExec(args, options.echo);
     }
 }
 
 module.exports = tippecanoe;
-const call = (cmd, async) => (layerFiles, params, options = {}) => tippecanoe(layerFiles, {...params, cmd}, {...options, async});
+const call = (cmd, async) => (layerFiles, params, options = {}) => tippecanoe(layerFiles, cmd, params, {...options, async});
 tippecanoe.tippecanoeSync = call('tippecanoe', false);
 tippecanoe.tippecanoeAsync = call('tippecanoe', true);
 tippecanoe.tilejoin = call('tile-join', false);
