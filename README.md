@@ -11,7 +11,13 @@ const tippecanoe = require('tippecanoe');
 tippecanoe([ inputFile1, inputFile2, ...], { parameters }, { options });
 
 const tippecanoe = require('tippecanoe').tippecanoeAsync;
-tippecanoeAsync([ inputFile1, inputFile2, ...], { parameters }, { options }).then(...);
+tippecanoe([ inputFile1, inputFile2, ...], { parameters }, { options }).then(...);
+
+const tilejoin = require('tippecanoe').tilejoin;
+tilejoin([ inputFile1, inputFile2, ...], { parameters }, { options });
+
+const tilejoin = require('tippecanoe').tilejoinAsync;
+tilejoin([ inputFile1, inputFile2, ...], { parameters }, { options }).then(...);
 ```
 
 

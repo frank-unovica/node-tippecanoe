@@ -1,9 +1,9 @@
-const shell = require('shelljs'), 
+const shell = require('shelljs'),
     kebabCase = require('kebab-case');
 const colors = require('colors');
 
 function shellExec(args, echo) {
-    const cmd = `tippecanoe ${args.join(' ')}`;
+    const cmd = `${args.cmd} ${args.join(' ')}`;
     if (echo) {
         console.log(cmd.green);
     }
@@ -14,14 +14,14 @@ function shellExec(args, echo) {
 function execAsync(args, echo) {
     const spawn = require('child-process-promise').spawn;
     if (echo) {
-        console.log(`tippecanoe ${args.join(' ')}`.green);
+        console.log(`${args.cmd} ${args.join(' ')}`.green);
     }
-    const promise = spawn('tippecanoe', args);
+    const promise = spawn(args.cmd, args);
     promise.childProcess.stderr.pipe(process.stdout);
     return promise;
 }
 
-function tippecanoe(layerFiles=[], params, options = {}) {
+function tippecanoe(inputFiles=[], params, options = {}) {
     function quotify(s) {
         if (typeof s === 'object') {
             s = JSON.stringify(s);
@@ -47,10 +47,10 @@ function tippecanoe(layerFiles=[], params, options = {}) {
     let paramStrs = Object.keys(params)
         .map(k => makeParam(k, params[k]))
         .filter(Boolean)
-    layerFiles = !Array.isArray(layerFiles) ? [layerFiles] : layerFiles;
-   
+    inputFiles = !Array.isArray(inputFiles) ? [inputFiles] : inputFiles;
+
     // const cmd = `tippecanoe ${paramsStr} ${layerFiles.map(quotify).join(' ')}`;
-    const args = [...paramStrs, ...layerFiles.map(quotify)];
+    const args = [...paramStrs, ...inputFiles.map(quotify)];
     if (options.async) {
         return execAsync(args, options.echo);
     } else {
@@ -59,5 +59,8 @@ function tippecanoe(layerFiles=[], params, options = {}) {
 }
 
 module.exports = tippecanoe;
-tippecanoe.tippecanoeSync = (layerFiles, params, options = {}) => tippecanoe(layerFiles, params, {...options, async: false });
-tippecanoe.tippecanoeAsync = (layerFiles, params, options = {}) => tippecanoe(layerFiles, params, {...options, async: true });
+const call = (cmd, async) => (layerFiles, params, options = {}) => tippecanoe(layerFiles, {...params, cmd}, {...options, async});
+tippecanoe.tippecanoeSync = call('tippecanoe', false);
+tippecanoe.tippecanoeAsync = call('tippecanoe', true);
+tippecanoe.tilejoin = call('tile-join', false);
+tippecanoe.tilejoinAsync = call('tile-join', true);
