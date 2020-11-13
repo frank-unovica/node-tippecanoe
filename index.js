@@ -2,8 +2,8 @@ const shell = require('shelljs'),
     kebabCase = require('kebab-case');
 const colors = require('colors');
 
-function shellExec(args, echo) {
-    const cmd = args.join(' ');
+function shellExec(cmd, args, echo) {
+    cmd = `${cmd} ${args.join(' ')}`;
     if (echo) {
         console.log(cmd.green);
     }
@@ -50,11 +50,11 @@ function tippecanoe(inputFiles=[], cmd, params, options = {}) {
     inputFiles = !Array.isArray(inputFiles) ? [inputFiles] : inputFiles;
 
     // const cmd = `tippecanoe ${paramsStr} ${layerFiles.map(quotify).join(' ')}`;
-    const args = [cmd, ...paramStrs, ...inputFiles.map(quotify)];
+    const args = [...paramStrs, ...inputFiles.map(quotify)];
     if (options.async) {
         return execAsync(cmd, args, options.echo);
     } else {
-        return shellExec(args, options.echo);
+        return shellExec(cmd, args, options.echo);
     }
 }
 
