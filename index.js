@@ -21,7 +21,7 @@ function execAsync(cmd, args, echo) {
     return promise;
 }
 
-function tippecanoe(inputFiles=[], cmd, params, options = {}) {
+function tippecanoe(inputFiles=[], params, options = {}, cmd = 'tippecanoe') {
     function quotify(s) {
         if (typeof s === 'object') {
             s = JSON.stringify(s);
@@ -59,7 +59,7 @@ function tippecanoe(inputFiles=[], cmd, params, options = {}) {
 }
 
 module.exports = tippecanoe;
-const call = (cmd, async) => (layerFiles, params, options = {}) => tippecanoe(layerFiles, cmd, params, {...options, async});
+const call = (cmd, async) => (layerFiles, params, options = {}) => tippecanoe(layerFiles, params, {...options, async}, cmd);
 tippecanoe.tippecanoeSync = call('tippecanoe', false);
 tippecanoe.tippecanoeAsync = call('tippecanoe', true);
 tippecanoe.tilejoin = call('tile-join', false);
